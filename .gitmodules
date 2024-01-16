@@ -1,0 +1,3 @@
+[submodule "tm4c_utils"]
+	path = tm4c_utils
+	url = https://github.com/slashprototype/tm4c_utils.git
