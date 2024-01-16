@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "utils/pins.h"
+#include <tm4c_utils/pins.h>
 
 /* Default configurations for using vnh5019A driver */
 typedef enum {
