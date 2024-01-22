@@ -70,18 +70,12 @@ typedef struct {
 }vnh5019A_driver_t;
 
 struct dc_motor_driver_legacy_functions {
-    void (*setSpeedRpm)(vnh5019A_driver_t*, uint32_t);
-    void (*enable)(vnh5019A_driver_t*);
-    void (*disable)(vnh5019A_driver_t*);
+    void (*configPWM)(pwm_module_t*);
     void (*setConfig)(vnh5019A_driver_t*, dc_motor_config_t);
 };
 
 /* Configure the PWM module for the selected speed in rpm*/
-void dcMotorSetSpeedRpm(vnh5019A_driver_t *driver, uint32_t speed_rpm);
-/* GPIOs configuration related to enable Motor*/
-void dcMotorEnable( vnh5019A_driver_t *driver);
-/* GPIOs configuration related to disable Motor*/
-void dcMotorDisable(vnh5019A_driver_t *driver);
+void dcMotorConfigPWM(pwm_module_t *pwm_module);
 /* Normal operation GPIOs based configuration mentioned in datasheet*/
 void dcMotorSetConfig(vnh5019A_driver_t* driver, dc_motor_config_t configuration);
 

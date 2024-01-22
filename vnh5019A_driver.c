@@ -32,20 +32,12 @@ void dcMotorSetConfig(vnh5019A_driver_t* driver, dc_motor_config_t configuration
     pinWrite(driver->en_b, (configuration & 0b0001));
 }
 
-void dcMotorSetSpeedRpm(vnh5019A_driver_t *driver, uint32_t speed_rpm){
-    //TODO: Do some conversion for pulse width related to dc motor rpm
-    // driver->pwm_module->frequency_hz = speed_rpm;
-}
-
-void dcMotorEnable(vnh5019A_driver_t *driver){
-    pinWrite(driver->en_a,1);
-    pinWrite(driver->en_b,1);
-}
-
-void dcMotorDisable( vnh5019A_driver_t *driver){
-    pinWrite(driver->in_b,0);
-    pinWrite(driver->in_a,0);
-    pinWrite(driver->en_b,0);
-    pinWrite(driver->en_a,0);
+void dcMotorConfigPWM(pwm_module_t *pwm_module){
+    PWMGenDisable(pwm_module->hw_base, pwm_module->pwm_gen);
+    PWMGenConfigure(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->pwm_gen_mode);
+    PWMGenPeriodSet(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->frequency_hz); /* 3332 -> 24.010 KHz PWM_SYSCLK_DIV_1*/
+    PWMPulseWidthSet(pwm_module->hw_base, pwm_module->pwm_out, pwm_module->pulse_width); /* 3332 -> 100% */
+    PWMGenEnable(pwm_module->hw_base,pwm_module->pwm_gen);
+    PWMOutputState(pwm_module->hw_base,pwm_module->pwm_out_bit,true);
 }
 
