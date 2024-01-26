@@ -21,6 +21,10 @@
 #include <stdbool.h>
 #include <tm4c_utils/pins.h>
 
+#ifdef IS_ROM
+#define TARGET_IS_BLIZZARD_RB1
+#endif
+
 /* Default configurations for using vnh5019A driver */
 typedef enum {
     BRAKE_TO_VCC      = 0b1111,
@@ -35,6 +39,9 @@ typedef enum {
 typedef struct {
     pin_t* pwm_pin;                 // PWM pin from Target
     uint32_t frequency_hz;          // PWM frequency, depends on pwmdiv /1 /2 /4 /8
+    uint32_t period_clock_units;    // PWM frequency, depends on pwmdiv /1 /2 /4 /8
+    uint32_t width_clock_units;     // Duty cycle for PWM operation
+    uint8_t duty_cycle_percentage;         // PWM percentage in percentage 0 - 100
     uint32_t hw_base;               //TM4C inc hw_memmap.h PWM Base
     uint32_t sysctl_periph_pwm;     //TM4C driverlib sysctl.h PWM Peripheral
     uint32_t sysctl_pwmdiv;         //TM4C driverlib sysctl.h PWM Clock div
@@ -43,7 +50,7 @@ typedef struct {
     uint32_t pwm_gen_mode;          //TM4C driverlib PWM lib generator mode
     uint32_t pwm_out;               //TM4C driverlib PWM lib PWM Out
     uint32_t pwm_out_bit;           //TM4C driverlib PWM lib PWM Out bit
-    uint32_t pulse_width;           // Duty cycle for PWM operation
+    bool is_ROM;                 // Select if program should be used by Flash or ROM
     void (*enable)(pin_t);          // PWM enable function
     void (*disable)(pin_t);         // PWM disable function
 }pwm_module_t;

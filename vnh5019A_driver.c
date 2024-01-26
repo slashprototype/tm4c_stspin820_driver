@@ -25,6 +25,10 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 
+#define TARGET_IS_BLIZZARD_RB1
+#include "driverlib/rom.h"
+#include "driverlib/rom_map.h"
+
 void dcMotorSetConfig(vnh5019A_driver_t* driver, dc_motor_config_t configuration){
     pinWrite(driver->in_a, (configuration & 0b1000));
     pinWrite(driver->in_b, (configuration & 0b0100));
@@ -33,11 +37,20 @@ void dcMotorSetConfig(vnh5019A_driver_t* driver, dc_motor_config_t configuration
 }
 
 void dcMotorConfigPWM(pwm_module_t *pwm_module){
-    PWMGenDisable(pwm_module->hw_base, pwm_module->pwm_gen);
-    PWMGenConfigure(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->pwm_gen_mode);
-    PWMGenPeriodSet(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->frequency_hz); /* 3332 -> 24.010 KHz PWM_SYSCLK_DIV_1*/
-    PWMPulseWidthSet(pwm_module->hw_base, pwm_module->pwm_out, pwm_module->pulse_width); /* 3332 -> 100% */
-    PWMGenEnable(pwm_module->hw_base,pwm_module->pwm_gen);
-    PWMOutputState(pwm_module->hw_base,pwm_module->pwm_out_bit,true);
+    if (pwm_module->is_ROM){
+        ROM_PWMGenDisable(pwm_module->hw_base, pwm_module->pwm_gen);
+        ROM_PWMGenConfigure(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->pwm_gen_mode);
+        ROM_PWMGenPeriodSet(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->period_clock_units); 
+        ROM_PWMPulseWidthSet(pwm_module->hw_base, pwm_module->pwm_out, pwm_module->width_clock_units - 1);
+        ROM_PWMGenEnable(pwm_module->hw_base,pwm_module->pwm_gen);
+        ROM_PWMOutputState(pwm_module->hw_base,pwm_module->pwm_out_bit,true);
+    }else{
+        PWMGenDisable(pwm_module->hw_base, pwm_module->pwm_gen);
+        PWMGenConfigure(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->pwm_gen_mode);
+        PWMGenPeriodSet(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->period_clock_units); 
+        PWMPulseWidthSet(pwm_module->hw_base, pwm_module->pwm_out, pwm_module->width_clock_units - 1);
+        PWMGenEnable(pwm_module->hw_base,pwm_module->pwm_gen);
+        PWMOutputState(pwm_module->hw_base,pwm_module->pwm_out_bit,true);
+    }
 }
 
