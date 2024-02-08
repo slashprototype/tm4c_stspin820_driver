@@ -17,8 +17,10 @@
 #ifndef SRC_DRIVERS_VNH5019A_VNH5019A_DRIVER_H_
 #define SRC_DRIVERS_VNH5019A_VNH5019A_DRIVER_H_
 
+/// \cond
 #include <stdint.h>
 #include <stdbool.h>
+/// \endcond
 #include <tm4c_utils/pins.h>
 
 #ifdef IS_ROM
