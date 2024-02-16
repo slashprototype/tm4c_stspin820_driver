@@ -36,21 +36,29 @@ void dcMotorSetConfig(vnh5019A_driver_t* driver, dc_motor_config_t configuration
     pinWrite(driver->en_b, (configuration & 0b0001));
 }
 
-void dcMotorConfigPWM(pwm_module_t *pwm_module){
-    if (pwm_module->is_ROM){
-        ROM_PWMGenDisable(pwm_module->hw_base, pwm_module->pwm_gen);
-        ROM_PWMGenConfigure(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->pwm_gen_mode);
-        ROM_PWMGenPeriodSet(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->period_clock_units); 
-        ROM_PWMPulseWidthSet(pwm_module->hw_base, pwm_module->pwm_out, pwm_module->width_clock_units - 1);
-        ROM_PWMGenEnable(pwm_module->hw_base,pwm_module->pwm_gen);
-        ROM_PWMOutputState(pwm_module->hw_base,pwm_module->pwm_out_bit,true);
-    }else{
-        PWMGenDisable(pwm_module->hw_base, pwm_module->pwm_gen);
-        PWMGenConfigure(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->pwm_gen_mode);
-        PWMGenPeriodSet(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->period_clock_units); 
-        PWMPulseWidthSet(pwm_module->hw_base, pwm_module->pwm_out, pwm_module->width_clock_units - 1);
-        PWMGenEnable(pwm_module->hw_base,pwm_module->pwm_gen);
-        PWMOutputState(pwm_module->hw_base,pwm_module->pwm_out_bit,true);
+void dcMotorConfigPWM(vnh5019A_driver_t* driver, float duty_cycle_percentage){
+    pwm_module_t* pwm_module = driver->pwm_module;
+    /* Avoid configuration if duty cycle hasn't changed*/
+    if (duty_cycle_percentage != pwm_module->duty_cycle_percentage){
+        pwm_module->duty_cycle_percentage = duty_cycle_percentage;
+        pwm_module->width_clock_units = pwm_module->period_clock_units * (duty_cycle_percentage/100);
+
+        if (pwm_module->is_ROM){
+            ROM_PWMGenDisable(pwm_module->hw_base, pwm_module->pwm_gen);
+            ROM_PWMGenConfigure(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->pwm_gen_mode);
+            ROM_PWMGenPeriodSet(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->period_clock_units); 
+            ROM_PWMPulseWidthSet(pwm_module->hw_base, pwm_module->pwm_out, pwm_module->width_clock_units - 1);
+            ROM_PWMGenEnable(pwm_module->hw_base,pwm_module->pwm_gen);
+            ROM_PWMOutputState(pwm_module->hw_base,pwm_module->pwm_out_bit,true);
+        }else{
+            PWMGenDisable(pwm_module->hw_base, pwm_module->pwm_gen);
+            PWMGenConfigure(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->pwm_gen_mode);
+            PWMGenPeriodSet(pwm_module->hw_base, pwm_module->pwm_gen, pwm_module->period_clock_units); 
+            PWMPulseWidthSet(pwm_module->hw_base, pwm_module->pwm_out, pwm_module->width_clock_units - 1);
+            PWMGenEnable(pwm_module->hw_base,pwm_module->pwm_gen);
+            PWMOutputState(pwm_module->hw_base,pwm_module->pwm_out_bit,true);
+        }
     }
+
 }
 
