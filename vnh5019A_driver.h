@@ -79,5 +79,6 @@ struct vnh5019A_driver {
 void dcMotorConfigPWM(vnh5019A_driver_t* driver, float duty_cycle_percentage);
 /* Normal operation GPIOs based configuration mentioned in datasheet*/
 void dcMotorSetConfig(vnh5019A_driver_t* driver, dc_motor_config_t configuration);
-
+/* Set 100% or 0% in PWM pin, useful when pwm is not implemented, can be used in configPWM pointer*/
+void dcMotorSetDiscreteSpeed(vnh5019A_driver_t* driver, float value);
 #endif /* SRC_DRIVERS_VNH5019A_VNH5019A_DRIVER_H_ */
